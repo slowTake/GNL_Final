@@ -6,7 +6,7 @@
 /*   By: pnurmi <pnurmi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 10:42:46 by pnurmi            #+#    #+#             */
-/*   Updated: 2025/06/08 15:17:43 by pnurmi           ###   ########.fr       */
+/*   Updated: 2025/06/08 16:15:47 by pnurmi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ char	*get_next_line(int fd)
 char	*ft_extract_line(char *read_buff, char *line)
 {
 	char	*joined;
-	char	*temp;
 	int		new_pos;
 
 	new_pos = ft_strchr(read_buff, '\n');
@@ -82,19 +81,7 @@ char	*ft_extract_line(char *read_buff, char *line)
 		read_buff[0] = '\0';
 		return (joined);
 	}
-	temp = ft_substr(read_buff, 0, new_pos + 1);
-	if (!temp)
-	{
-		free(line);
-		return (NULL);
-	}
-	joined = ft_strjoin(line, temp);
-	free(temp);
-	free(line);
-	if (!joined)
-		return (NULL);
-	ft_shift_buffer(read_buff, new_pos + 1);
-	return (joined);
+	return (ft_handle_newline(read_buff, new_pos, line));
 }
 
 void	ft_shift_buffer(char *read_buff, size_t start)
@@ -113,4 +100,24 @@ void	ft_shift_buffer(char *read_buff, size_t start)
 		read_buff[i] = '\0';
 		i++;
 	}
+}
+
+char	*ft_handle_newline(char *read_buff, int new_pos, char *line)
+{
+	char	*temp;
+	char	*joined;
+
+	temp = ft_substr(read_buff, 0, new_pos + 1);
+	if (!temp)
+	{
+		free(line);
+		return (NULL);
+	}
+	joined = ft_strjoin(line, temp);
+	free(temp);
+	free(line);
+	if (!joined)
+		return (NULL);
+	ft_shift_buffer(read_buff, new_pos + 1);
+	return (joined);
 }

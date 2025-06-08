@@ -6,7 +6,7 @@
 /*   By: pnurmi <pnurmi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 14:57:51 by pnurmi            #+#    #+#             */
-/*   Updated: 2025/06/08 15:17:44 by pnurmi           ###   ########.fr       */
+/*   Updated: 2025/06/08 16:15:52 by pnurmi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,6 @@ int		ft_strchr(const char *str, int c);
 char	*ft_strjoin(const char *s1, const char *s2);
 char	*ft_substr(const char *s, unsigned int start, size_t len);
 void	ft_shift_buffer(char *read_buff, size_t start);
+char	*ft_handle_newline(char *read_buff, int new_pos, char *line);
 
 #endif
