@@ -1,0 +1,116 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pnurmi <pnurmi@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/23 10:42:46 by pnurmi            #+#    #+#             */
+/*   Updated: 2025/06/08 15:17:43 by pnurmi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "get_next_line.h"
+
+int	ft_read_buffer(char *read_buff, int fd, char **line)
+{
+	ssize_t	bytes_read;
+
+	bytes_read = read(fd, read_buff, BUFFER_SIZE);
+	if (bytes_read < 0)
+	{
+		if (*line)
+		{
+			free(*line);
+			*line = NULL;
+		}
+		return (0);
+	}
+	if (bytes_read == 0)
+	{
+		if (*line && (*line)[0] == '\0')
+		{
+			free(*line);
+			*line = NULL;
+		}
+		return (0);
+	}
+	read_buff[bytes_read] = '\0';
+	return (1);
+}
+
+char	*get_next_line(int fd)
+{
+	static char	read_buff[BUFFER_SIZE + 1];
+	char		*line;
+
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	line = ft_strdup("");
+	if (!line)
+		return (NULL);
+	while (1)
+	{
+		if (read_buff[0] == '\0')
+		{
+			if (!ft_read_buffer(read_buff, fd, &line))
+				return (line);
+		}
+		line = ft_extract_line(read_buff, line);
+		if (!line)
+			return (NULL);
+		if (ft_strchr(line, '\n') != -1)
+		{
+			return (line);
+		}
+	}
+}
+
+char	*ft_extract_line(char *read_buff, char *line)
+{
+	char	*joined;
+	char	*temp;
+	int		new_pos;
+
+	new_pos = ft_strchr(read_buff, '\n');
+	if (new_pos == -1)
+	{
+		joined = ft_strjoin(line, read_buff);
+		free(line);
+		if (!joined)
+			return (NULL);
+		read_buff[0] = '\0';
+		return (joined);
+	}
+	temp = ft_substr(read_buff, 0, new_pos + 1);
+	if (!temp)
+	{
+		free(line);
+		return (NULL);
+	}
+	joined = ft_strjoin(line, temp);
+	free(temp);
+	free(line);
+	if (!joined)
+		return (NULL);
+	ft_shift_buffer(read_buff, new_pos + 1);
+	return (joined);
+}
+
+void	ft_shift_buffer(char *read_buff, size_t start)
+{
+	size_t	i;
+
+	i = 0;
+	while (start <= BUFFER_SIZE && read_buff[start])
+	{
+		read_buff[i] = read_buff[start];
+		i++;
+		start++;
+	}
+	while (i <= BUFFER_SIZE)
+	{
+		read_buff[i] = '\0';
+		i++;
+	}
+}
